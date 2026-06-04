@@ -9,22 +9,51 @@ interface GanttChartProps {
   quantum?: number;
 }
 
-const NEUTRAL_PALETTE = [
-  '#cbd5e1',
-  '#b8c3d0',
-  '#a4b3c4',
-  '#90a2b6',
-  '#7c92a8',
-  '#6a839a',
-];
+function hslToHex(h: number, s: number, l: number): string {
+  const saturation = s / 100;
+  const lightness = l / 100;
+  const chroma = (1 - Math.abs(2 * lightness - 1)) * saturation;
+  const hueSection = h / 60;
+  const secondary = chroma * (1 - Math.abs((hueSection % 2) - 1));
 
-// Genera una paleta neutral y desaturada para que el Gantt combine con la UI
-function generatePalette(n: number): string[] {
-  const palette: string[] = [];
-  for (let i = 0; i < n; i++) {
-    palette.push(NEUTRAL_PALETTE[i % NEUTRAL_PALETTE.length]);
+  let red = 0;
+  let green = 0;
+  let blue = 0;
+
+  if (hueSection >= 0 && hueSection < 1) {
+    red = chroma;
+    green = secondary;
+  } else if (hueSection < 2) {
+    red = secondary;
+    green = chroma;
+  } else if (hueSection < 3) {
+    green = chroma;
+    blue = secondary;
+  } else if (hueSection < 4) {
+    green = secondary;
+    blue = chroma;
+  } else if (hueSection < 5) {
+    red = secondary;
+    blue = chroma;
+  } else {
+    red = chroma;
+    blue = secondary;
   }
-  return palette;
+
+  const matchLightness = lightness - chroma / 2;
+  const toHex = (value: number) => {
+    const channel = Math.round((value + matchLightness) * 255);
+    return channel.toString(16).padStart(2, '0');
+  };
+
+  return `#${toHex(red)}${toHex(green)}${toHex(blue)}`;
+}
+
+function generatePalette(n: number): string[] {
+  return Array.from({ length: n }, (_, i) => {
+    const hue = (i * 137.508) % 360;
+    return hslToHex(hue, 72, 54);
+  });
 }
 
 const TICK_INTERVAL = 5; // Marcas del eje cada 5 unidades
