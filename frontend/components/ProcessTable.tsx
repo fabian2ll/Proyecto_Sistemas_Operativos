@@ -31,8 +31,8 @@ export default function ProcessTable({ processes }: ProcessTableProps) {
             <th>Nombre</th>
             <th>Prioridad</th>
             <th>Burst</th>
-            <th>Estado</th>
             <th>Llegada</th>
+            <th>Estado</th>
             <th>Páginas</th>
             <th>Archivos</th>
           </tr>
